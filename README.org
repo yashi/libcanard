@@ -1,0 +1,44 @@
+#+title: Zephyr modularized libcanard
+
+This is a [[https://docs.zephyrproject.org/latest/develop/modules.html][Zephyr modularized]] version of libcanard.  The original
+README is renamed to README-orig.md.
+
+To use it in your project, add something like the following in your
+west.yml.
+
+#+begin_src yaml
+  - name: libcanard
+    url: https://github.com/yashi/libcanard
+    revision: zephyr
+    path: modules/lib/libcanard
+#+end_src
+
+And use it as usual in your app.
+
+#+begin_src c
+  #include <zephyr/kernel.h>
+
+  #include <libcanard/canard.h>
+
+  static void* memAllocate(CanardInstance* const canard, const size_t amount)
+  {
+  	(void)canard;
+  	return k_malloc(amount);
+  }
+
+  static void memFree(CanardInstance* const canard, void* const pointer)
+  {
+  	(void) canard;
+  	k_free(pointer);
+  }
+
+  int main(void)
+  {
+  	CanardInstance canard;
+
+  	canard = canardInit(&memAllocate, &memFree);
+  	printk("Hello libcanard!\n");
+
+  	return 0;
+  }
+#+end_src
